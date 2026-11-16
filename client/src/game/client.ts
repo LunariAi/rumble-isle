@@ -1,6 +1,6 @@
 // Client-side game: input, prediction, interpolation, effects and canvas rendering.
 // The server is authoritative; nothing here can change health, ammo, inventory or hits.
-import { COLORS, DT, GRENADE, ItemId, MAP_SIZE, PICKUP_RANGE, PLAYER_RADIUS, REVIVE_RANGE, WEAPONS, WEAPON_IDS, WeaponId } from '../../../shared/config';
+import { BULLET_HIT_PAD, COLORS, DT, GRENADE, ItemId, MAP_SIZE, PICKUP_RANGE, PLAYER_RADIUS, REVIVE_RANGE, WEAPONS, WEAPON_IDS, WeaponId } from '../../../shared/config';
 import { GameMap, buildMap, buildingAt, bushAt, raycast, segCircle } from '../../../shared/map';
 import { F_DOWNED, F_LANDING, F_MOVING, MeState, OwnStats, PlayerSnap, RosterEntry, Snap, StartMsg } from '../../../shared/protocol';
 import { BTN_DASH, BTN_SHOOT, BTN_USE, GameEvent, InputMsg, Loot, MoveState, applyMove } from '../../../shared/sim';
@@ -9,7 +9,7 @@ import { audio } from './audio';
 import { MAP_PAD, drawBush, drawCanopy, drawCharacter, drawGround, drawLoot, drawObstacle, drawRoof, renderMapImage, shade } from './draw';
 
 const STEP = 1000 / 30;
-const INTERP_DELAY = 3.2; // ticks (~107 ms) behind the newest snapshot
+const INTERP_DELAY = 2.2; // ticks (~73 ms) behind the newest snapshot
 const TAU = Math.PI * 2;
 
 interface VBullet { id: number; o: number; team: number; x: number; y: number; dx: number; dy: number; speed: number; dist: number; range: number }
@@ -431,7 +431,7 @@ export class GameClient {
       let t = raycast(this.map, b.x, b.y, ex, ey);
       for (const r of this.rps) {
         if (r.id === b.o || (this.roster.get(r.id)?.team ?? -2) === b.team || r.flags & F_LANDING) continue;
-        const tp = segCircle(b.x, b.y, ex - b.x, ey - b.y, r.x, r.y, PLAYER_RADIUS);
+        const tp = segCircle(b.x, b.y, ex - b.x, ey - b.y, r.x, r.y, PLAYER_RADIUS + BULLET_HIT_PAD);
         if (tp < t) t = tp;
       }
       if (t <= 1) { this.bullets.splice(i, 1); continue; }

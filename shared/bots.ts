@@ -73,7 +73,7 @@ export function botThink(g: Game, p: Player, b: BotBrain): InputMsg | null {
   if (enemy && enemy.alive) {
     const dx = enemy.x - p.x, dy = enemy.y - p.y, d = Math.hypot(dx, dy);
     b.errT -= DT;
-    if (b.errT <= 0) { b.errT = 0.35; b.aimErr = (rnd() + rnd() - 1) * 0.34; }
+    if (b.errT <= 0) { b.errT = 0.35; b.aimErr = (rnd() + rnd() - 1) * 0.44; }
     const want = Math.atan2(dy, dx) + b.aimErr;
     inp.aim = p.aim + Math.max(-0.25, Math.min(0.25, angDiff(want, p.aim)));
     b.react -= DT;

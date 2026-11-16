@@ -1,7 +1,7 @@
 // Authoritative game simulation. Pure logic: no sockets, no timers, no DOM.
 // The server owns one Game per match; the client only reuses applyMove() for prediction.
 import {
-  AMMO_PACK, AmmoType, DASH_COOLDOWN, DASH_SPEED, DASH_TIME, DOWNED_BLEED, DOWNED_HP, DOWNED_SPEED, DROP_TIME, DT, GRENADE,
+  AMMO_PACK, AmmoType, BULLET_HIT_PAD, DASH_COOLDOWN, DASH_SPEED, DASH_TIME, DOWNED_BLEED, DOWNED_HP, DOWNED_SPEED, DROP_TIME, DT, GRENADE,
   ITEMS, ITEM_IDS, ItemId, LAND_TIME, MAP_SIZE, MAX_ARMOR, MAX_HP, MELEE, PICKUP_RANGE, PLAYER_RADIUS, PLAYER_SPEED, RARITIES,
   REVIVE_HP, REVIVE_RANGE, REVIVE_TIME, USE_SLOW, WATER_SLOW, WEAPONS, WEAPON_IDS, WeaponId, ZONE_STAGES, weaponDamage,
 } from './config';
@@ -493,8 +493,8 @@ export class Game {
       let victim: Player | null = null;
       for (const p of this.players) {
         if (!p.alive || p.id === b.o || p.team === b.team || p.landT > 0) continue;
-        if (Math.abs(p.x - b.x) > step + 30 || Math.abs(p.y - b.y) > step + 30) continue;
-        const t = segCircle(b.x, b.y, dx, dy, p.x, p.y, PLAYER_RADIUS);
+        if (Math.abs(p.x - b.x) > step + 40 || Math.abs(p.y - b.y) > step + 40) continue;
+        const t = segCircle(b.x, b.y, dx, dy, p.x, p.y, PLAYER_RADIUS + BULLET_HIT_PAD);
         if (t <= 1 && t <= best) { best = t; victim = p; }
       }
       if (best <= 1) {

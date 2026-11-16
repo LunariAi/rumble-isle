@@ -2,15 +2,16 @@
 
 export const TICK_RATE = 30;
 export const DT = 1 / TICK_RATE;
-export const SNAP_EVERY = 2; // server sends a snapshot every N ticks (15 Hz)
+export const SNAP_EVERY = 1; // server sends a snapshot every N ticks (30 Hz)
 
 export const MAP_SIZE = 4800;
 export const PLAYER_RADIUS = 18;
-export const PLAYER_SPEED = 255;
+export const BULLET_HIT_PAD = 6; // bullets hit a slightly larger circle than the body, so near misses count
+export const PLAYER_SPEED = 200;
 export const WATER_SLOW = 0.6;
 export const USE_SLOW = 0.55;
 export const DOWNED_SPEED = 55;
-export const DASH_SPEED = 720;
+export const DASH_SPEED = 600;
 export const DASH_TIME = 0.2;
 export const DASH_COOLDOWN = 6;
 
@@ -54,14 +55,14 @@ export interface WeaponDef {
 }
 
 export const WEAPONS = {
-  popper: { name: 'Popper', cls: 'pistol', ammo: 'light', damage: 15, pellets: 1, fireRate: 0.26, reload: 1.2, mag: 12, range: 620, speed: 1250, spread: 0.035, auto: false, rarities: [0, 1, 2], weight: 20 },
-  bigiron: { name: 'Big Iron', cls: 'pistol', ammo: 'heavy', damage: 38, pellets: 1, fireRate: 0.6, reload: 1.7, mag: 6, range: 760, speed: 1500, spread: 0.02, auto: false, rarities: [2, 3, 4], weight: 6 },
-  scatter: { name: 'Scatterblast', cls: 'shotgun', ammo: 'shells', damage: 9, pellets: 8, fireRate: 0.85, reload: 2.3, mag: 5, range: 330, speed: 1150, spread: 0.2, auto: false, rarities: [0, 1, 2, 3], weight: 14 },
-  thumper: { name: 'Thumper', cls: 'shotgun', ammo: 'shells', damage: 7, pellets: 7, fireRate: 0.38, reload: 2.6, mag: 8, range: 300, speed: 1150, spread: 0.24, auto: true, rarities: [2, 3, 4], weight: 5 },
-  ranger: { name: 'Ranger AR', cls: 'rifle', ammo: 'medium', damage: 17, pellets: 1, fireRate: 0.14, reload: 2.0, mag: 28, range: 780, speed: 1500, spread: 0.045, auto: true, rarities: [0, 1, 2, 3, 4], weight: 14 },
-  bruiser: { name: 'Bruiser', cls: 'rifle', ammo: 'medium', damage: 27, pellets: 1, fireRate: 0.26, reload: 2.4, mag: 20, range: 880, speed: 1600, spread: 0.028, auto: true, rarities: [2, 3, 4], weight: 6 },
-  buzzer: { name: 'Buzzer SMG', cls: 'smg', ammo: 'light', damage: 10, pellets: 1, fireRate: 0.075, reload: 1.7, mag: 32, range: 520, speed: 1300, spread: 0.085, auto: true, rarities: [0, 1, 2, 3], weight: 15 },
-  longshot: { name: 'Longshot', cls: 'sniper', ammo: 'heavy', damage: 78, pellets: 1, fireRate: 1.35, reload: 2.8, mag: 4, range: 1500, speed: 2400, spread: 0.004, auto: false, rarities: [1, 2, 3, 4], weight: 6 },
+  popper: { name: 'Popper', cls: 'pistol', ammo: 'light', damage: 15, pellets: 1, fireRate: 0.26, reload: 1.2, mag: 12, range: 620, speed: 1500, spread: 0.022, auto: false, rarities: [0, 1, 2], weight: 20 },
+  bigiron: { name: 'Big Iron', cls: 'pistol', ammo: 'heavy', damage: 38, pellets: 1, fireRate: 0.6, reload: 1.7, mag: 6, range: 760, speed: 1800, spread: 0.012, auto: false, rarities: [2, 3, 4], weight: 6 },
+  scatter: { name: 'Scatterblast', cls: 'shotgun', ammo: 'shells', damage: 9, pellets: 8, fireRate: 0.85, reload: 2.3, mag: 5, range: 330, speed: 1400, spread: 0.16, auto: false, rarities: [0, 1, 2, 3], weight: 14 },
+  thumper: { name: 'Thumper', cls: 'shotgun', ammo: 'shells', damage: 7, pellets: 7, fireRate: 0.38, reload: 2.6, mag: 8, range: 300, speed: 1400, spread: 0.19, auto: true, rarities: [2, 3, 4], weight: 5 },
+  ranger: { name: 'Ranger AR', cls: 'rifle', ammo: 'medium', damage: 17, pellets: 1, fireRate: 0.14, reload: 2.0, mag: 28, range: 780, speed: 1800, spread: 0.028, auto: true, rarities: [0, 1, 2, 3, 4], weight: 14 },
+  bruiser: { name: 'Bruiser', cls: 'rifle', ammo: 'medium', damage: 27, pellets: 1, fireRate: 0.26, reload: 2.4, mag: 20, range: 880, speed: 1900, spread: 0.018, auto: true, rarities: [2, 3, 4], weight: 6 },
+  buzzer: { name: 'Buzzer SMG', cls: 'smg', ammo: 'light', damage: 10, pellets: 1, fireRate: 0.075, reload: 1.7, mag: 32, range: 520, speed: 1550, spread: 0.06, auto: true, rarities: [0, 1, 2, 3], weight: 15 },
+  longshot: { name: 'Longshot', cls: 'sniper', ammo: 'heavy', damage: 78, pellets: 1, fireRate: 1.35, reload: 2.8, mag: 4, range: 1500, speed: 2900, spread: 0.003, auto: false, rarities: [1, 2, 3, 4], weight: 6 },
 } satisfies Record<string, WeaponDef>;
 
 export type WeaponId = keyof typeof WEAPONS;
