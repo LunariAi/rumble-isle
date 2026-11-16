@@ -571,6 +571,12 @@ export class GameClient {
       drawRoof(c, b, this.roofAlpha[i]);
     }
 
+    // aim guide: a dotted line along the aim direction, cut short by cover
+    const canAim = this.controlling && !!viewed && !!me && !(viewed.flags & (F_DOWNED | F_LANDING));
+    const cursor = canAim && !this.showMap ? 'none' : 'default';
+    if (cv.style.cursor !== cursor) cv.style.cursor = cursor;
+    if (canAim && viewed && me) this.drawAim(c, viewed, me);
+
     // storm
     const z = this.zone;
     c.beginPath();
@@ -635,6 +641,43 @@ export class GameClient {
       c.fillStyle = g; c.fillRect(0, 0, W, H);
     }
     if (this.frame % 3 === 0 && this.mini) this.drawMap(this.mini, false);
+  }
+
+  private drawAim(c: CanvasRenderingContext2D, v: RP, me: MeState): void {
+    const w = me.w[me.act];
+    const def = w ? WEAPONS[w[0]] : null;
+    const range = def ? def.range : 70;
+    const spread = def ? def.spread : 0;
+    const dim = me.rl > 0 || me.use !== null || (w !== null && w[2] <= 0) ? 0.35 : 1;
+    const mw = this.mouseWorld();
+    const mouseD = Math.hypot(mw.x - v.x, mw.y - v.y);
+    // wide weapons show both edges of their cone, precise ones a single line
+    const angles = spread > 0.1 ? [v.aim - spread, v.aim + spread] : [v.aim];
+    for (const a of angles) {
+      const dx = Math.cos(a), dy = Math.sin(a);
+      const t = raycast(this.map, v.x, v.y, v.x + dx * range, v.y + dy * range);
+      const end = t <= 1 ? range * t : range;
+      for (let d = 40; d < end - 4; d += 24) {
+        const f = d / range;
+        c.globalAlpha = (0.9 - f * 0.55) * dim;
+        c.fillStyle = 'rgba(29,26,43,.55)';
+        c.beginPath(); c.arc(v.x + dx * d, v.y + dy * d, 5.8 - f * 1.8, 0, TAU); c.fill();
+        c.fillStyle = '#ffffff';
+        c.beginPath(); c.arc(v.x + dx * d, v.y + dy * d, 4.3 - f * 1.5, 0, TAU); c.fill();
+      }
+      if (t <= 1) {
+        c.globalAlpha = 0.9 * dim; c.strokeStyle = '#ff6b6b'; c.lineWidth = 3;
+        c.beginPath(); c.arc(v.x + dx * end, v.y + dy * end, 6, 0, TAU); c.stroke();
+      }
+    }
+    // where the pointer is along the line (also where a Boom Berry would land)
+    const dx = Math.cos(v.aim), dy = Math.sin(v.aim);
+    const md = Math.max(46, mouseD);
+    c.globalAlpha = 0.95 * dim; c.lineWidth = 3; c.strokeStyle = '#1d1a2b';
+    c.beginPath(); c.arc(v.x + dx * md, v.y + dy * md, 9, 0, TAU); c.stroke();
+    c.lineWidth = 1.8; c.strokeStyle = '#ffe066';
+    c.beginPath(); c.arc(v.x + dx * md, v.y + dy * md, 9, 0, TAU); c.stroke();
+    c.globalAlpha = 1;
   }
 
   /** Draws the island overview (minimap, big map and landing map share this). */
